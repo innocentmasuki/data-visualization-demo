@@ -1,0 +1,68 @@
+C1 Reparatie Onderhoud,1 Klant,11
+C2 Mutatie Onderhoud,1 Klant,10
+C3 Planmatig Onderhoud,1 Klant,55
+C4 Woningverbeteringen,1 Klant,10
+C5 Asbestsanering,1 Klant,23
+C6 Energielabels,1 Klant,10
+D1 Nieuwe verhuring,1 Klant,67
+D2 Huurcontract beëindigen,1 Klant,10
+D3 Inspecteren,1 Klant,86
+E1 Huurprijs wijzigen | Jaarlijks,1 Klant,10
+E2 Huurprijs wijzigen | Tussentijds,1 Klant,35
+E3 Huurprijs | Corporatie,1 Klant,10
+E4 Huurprijs | Klant,1 Klant,10
+E5 Tenaamstelling,1 Klant,48
+E6 Medehuurderschap,1 Klant,10
+E7 Inwoning,1 Klant,10
+E8 Huisbewaring,1 Klant,6
+E9 Huurcontract verlengen,1 Klant,10
+F1 Serviceabonnement,1 Klant,53
+F2 Leefbaarheid,1 Klant,10
+F3 Klantcontacten,1 Klant,10
+F4 Klachten & complimenten,1 Klant,10
+F5 Sleutels en naamplaatje,1 Klant,10
+F6 Huurspecificatie,1 Klant,44
+F7 Verhuurdersverklaring,1 Klant,10
+F8 Woningruil & Woningdelen,1 Klant,4
+F9 Wooncoöperatie,1 Klant,23
+G1 Debiteurenbeheer,1 Klant,10
+G2 Prolongeren,1 Klant,8
+G3 Factureren,1 Klant,30
+G4 Incasseren,1 Klant,72
+G5 Betalingsregelingen,1 Klant,45
+G6 Afboeken vorderingen,1 Klant,30
+I1 Service & Verbruik,1 Klant,10
+I2 Service & Verbruik | Jaarlijkse afrekening,1 Klant,10
+I4 Advies Verbruikskosten,1 Klant,10
+X21 Random Item 1,2 Leefbaarheid,6
+X22 Random Item 2,2 Leefbaarheid,5
+X31 Random Item 1,3 Incasso,2
+X32 Random Item 2,3 Incasso,8
+X41 Random Item 1,4 Passendheid,6
+X51 Random Item 1,5 Verkoopfacturen,10
+X52 Random Item 2,5 Verkoopfacturen,6
+X53 Random Item 3,5 Verkoopfacturen,8
+X61 Random Item 1,6 Inkoopfacturen,9
+X62 Random Item 2,6 Inkoopfacturen,10
+X71 Random Item 1,7 Vastgoedeigendom,8
+X72 Random Item 2,7 Vastgoedeigendom,6
+X73 Random Item 3,7 Vastgoedeigendom,1
+X81 Random Item 1,8 Vastgoedbeheer,3
+X82 Random Item 2,8 Vastgoedbeheer,10
+X91 Random Item 1,9 Procurement | Basis,9
+X101 Random Item 1,10 Procurement | Premium,5
+X102 Random Item 2,10 Procurement | Premium,6
+X111 Random Item 1,11 Relatie,9
+X112 Random Item 2,11 Relatie,4
+X113 Random Item 3,11 Relatie,7
+X121 Random Item 1,12 Personeel,3
+X131 Random Item 1,13 OR,8
+X132 Random Item 2,13 OR,4
+X141 Random Item 1,14 MT,1
+X142 Random Item 2,14 MT,2
+X151 Random Item 1,15 Directie,2
+X161 Random Item 1,16 Bestuur,3
+X162 Random Item 2,16 Bestuur,3
+X163 Random Item 3,16 Bestuur,1
+X171 Random Item 1,17 RvC,8
+X181 Random Item 1,18 Compliance,7
