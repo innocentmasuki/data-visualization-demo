@@ -29,7 +29,7 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
         if (!relationships.length) return
 
         // 1) define margins
-        const margin = {top: 40, right: 20, bottom: 40, left: 20}
+        const margin = {top: 150, right: 80, bottom: 250, left: 20}
         // 2) compute total internal size
         const totalWidth = width + margin.left + margin.right
         const totalHeight = height + margin.top + margin.bottom
@@ -126,7 +126,6 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
                 (d) => d3.rgb(colorScale(entities[d.index])).darker().toString()
             )
 
-        // draw labels
         group
             .append('text')
             .each((d) => {
@@ -169,7 +168,6 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
                 tt.style.display = 'block'
                 tt.innerHTML = `
           <div><strong>${entities[d.source.index]}</strong> → <strong>${entities[d.target.index]}</strong></div>
-          <div>Value: ${d.source.value}</div>
         `
             })
             .on('mousemove', (event) => {
