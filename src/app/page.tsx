@@ -3,9 +3,7 @@ import React, {useEffect, useState} from 'react'
 import { ChordDiagram, Relationship } from '@/components/diagram'
 
 const Home: React.FC = () => {
-    const [relInput, setRelInput] = useState<string>('')
     const [relationships, setRelationships] = useState<Relationship[]>([])
-    const [loading, setLoading] = useState<boolean>(false)
 
     const parseCSV = (csv: string): Relationship[] => {
         return csv
@@ -23,7 +21,6 @@ const Home: React.FC = () => {
     }
 
     const loadStaticCsv = async () => {
-        setLoading(true)
         try {
             const res = await fetch('/data/relationships.csv')
             if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -31,8 +28,6 @@ const Home: React.FC = () => {
             setRelationships(parseCSV(text))
         } catch (err: any) {
             alert(`Failed to load CSV: ${err.message}`)
-        } finally {
-            setLoading(false)
         }
     }
 
