@@ -144,7 +144,7 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
             .attr('text-anchor', (d) =>
                 (d as any).angle > Math.PI ? 'end' : 'start'
             )
-            .text((d) => entities[d.index].split(' ')[0])
+            .text((d) => entities[d.index])
 
         // draw ribbons
         const ribbons = g
@@ -184,66 +184,66 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
             })
 
         // Add legend
-        const legendItemHeight = 20;
-        const legendItemWidth = 150;
-        const legendPadding = 10;
-        const legendItemsPerRow = 2; // Display 2 items per row
-        const maxLegendItems = 20; // Limit the number of items to avoid an overly large legend
-
-        // Get the most important entities (prioritize C2 and limit the total)
-        const legendEntities = entities.slice(0, maxLegendItems);
-
-        // Calculate the number of rows needed
-        const legendRows = Math.ceil(legendEntities.length / legendItemsPerRow);
-        const legendWidth = (legendItemWidth * legendItemsPerRow) + (legendPadding * 2);
-        const legendHeight = (legendRows * legendItemHeight) + legendPadding * 3 + 20; // Extra space for title
-
-        // Create legend container in the bottom right
-        const legend = svg.append('g')
-            .attr('class', 'legend')
-            .attr('transform', `translate(${totalWidth - legendWidth - 20}, ${totalHeight - legendHeight - 20})`);
-
-        // Add background for better visibility
-        legend.append('rect')
-            .attr('width', legendWidth)
-            .attr('height', legendHeight)
-            .attr('fill', 'white')
-            .attr('opacity', 0.9)
-            .attr('rx', 5)
-            .attr('ry', 5)
-            .attr('stroke', '#ccc')
-            .attr('stroke-width', 1);
-
-        // Add legend title
-        legend.append('text')
-            .attr('x', legendPadding)
-            .attr('y', legendPadding + 15)
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold')
-            .text('Legend');
-
-        // Add legend items
-        legendEntities.forEach((entity, i) => {
-            const row = Math.floor(i / legendItemsPerRow);
-            const col = i % legendItemsPerRow;
-
-            const itemGroup = legend.append('g')
-                .attr('transform', `translate(${col * legendItemWidth + legendPadding}, ${row * legendItemHeight  + 20})`);
-
-            // Add color box
-            itemGroup.append('rect')
-                .attr('width', 12)
-                .attr('height', 12)
-                .attr('fill', colorScale(entity))
-                .attr('stroke', d3.rgb(colorScale(entity)).darker().toString());
-
-            // Add entity name
-            itemGroup.append('text')
-                .attr('x', 16)
-                .attr('y', 10)
-                .attr('font-size', '10px')
-                .text(entity.length > 18 ? entity.substring(0, 15) + '...' : entity);
-        });
+        // const legendItemHeight = 20;
+        // const legendItemWidth = 150;
+        // const legendPadding = 10;
+        // const legendItemsPerRow = 2; // Display 2 items per row
+        // const maxLegendItems = 20; // Limit the number of items to avoid an overly large legend
+        //
+        // // Get the most important entities (prioritize C2 and limit the total)
+        // const legendEntities = entities.slice(0, maxLegendItems);
+        //
+        // // Calculate the number of rows needed
+        // const legendRows = Math.ceil(legendEntities.length / legendItemsPerRow);
+        // const legendWidth = (legendItemWidth * legendItemsPerRow) + (legendPadding * 2);
+        // const legendHeight = (legendRows * legendItemHeight) + legendPadding * 3 + 20; // Extra space for title
+        //
+        // // Create legend container in the bottom right
+        // const legend = svg.append('g')
+        //     .attr('class', 'legend')
+        //     .attr('transform', `translate(${totalWidth - legendWidth - 20}, ${totalHeight - legendHeight - 20})`);
+        //
+        // // Add background for better visibility
+        // legend.append('rect')
+        //     .attr('width', legendWidth)
+        //     .attr('height', legendHeight)
+        //     .attr('fill', 'white')
+        //     .attr('opacity', 0.9)
+        //     .attr('rx', 5)
+        //     .attr('ry', 5)
+        //     .attr('stroke', '#ccc')
+        //     .attr('stroke-width', 1);
+        //
+        // // Add legend title
+        // legend.append('text')
+        //     .attr('x', legendPadding)
+        //     .attr('y', legendPadding + 15)
+        //     .attr('font-size', '12px')
+        //     .attr('font-weight', 'bold')
+        //     .text('Legend');
+        //
+        // // Add legend items
+        // legendEntities.forEach((entity, i) => {
+        //     const row = Math.floor(i / legendItemsPerRow);
+        //     const col = i % legendItemsPerRow;
+        //
+        //     const itemGroup = legend.append('g')
+        //         .attr('transform', `translate(${col * legendItemWidth + legendPadding}, ${row * legendItemHeight  + 20})`);
+        //
+        //     // Add color box
+        //     itemGroup.append('rect')
+        //         .attr('width', 12)
+        //         .attr('height', 12)
+        //         .attr('fill', colorScale(entity))
+        //         .attr('stroke', d3.rgb(colorScale(entity)).darker().toString());
+        //
+        //     // Add entity name
+        //     itemGroup.append('text')
+        //         .attr('x', 16)
+        //         .attr('y', 10)
+        //         .attr('font-size', '10px')
+        //         .text(entity.length > 18 ? entity.substring(0, 15) + '...' : entity);
+        // });
     }, [relationships, colors, width, height])
 
     return (

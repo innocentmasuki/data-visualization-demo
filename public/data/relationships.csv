@@ -1,68 +1,167 @@
-C1 Reparatie Onderhoud,1 Klant,40
-C2 Mutatie Onderhoud,1 Klant,10
-C3 Planmatig Onderhoud,1 Klant,55
-C4 Woningverbeteringen,1 Klant,10
-C5 Asbestsanering,1 Klant,23
-C6 Energielabels,1 Klant,10
-D1 Nieuwe verhuring,1 Klant,67
-D2 Huurcontract beëindigen,1 Klant,10
-D3 Inspecteren,1 Klant,86
-E1 Huurprijs wijzigen | Jaarlijks,1 Klant,10
-E2 Huurprijs wijzigen | Tussentijds,1 Klant,35
-E3 Huurprijs | Corporatie,1 Klant,10
-E4 Huurprijs | Klant,1 Klant,10
-E5 Tenaamstelling,1 Klant,48
-E6 Medehuurderschap,1 Klant,10
-E7 Inwoning,1 Klant,10
-E8 Huisbewaring,1 Klant,6
-E9 Huurcontract verlengen,1 Klant,10
-F1 Serviceabonnement,1 Klant,53
-F2 Leefbaarheid,1 Klant,10
-F3 Klantcontacten,1 Klant,10
-F4 Klachten & complimenten,1 Klant,10
-F5 Sleutels en naamplaatje,1 Klant,10
-F6 Huurspecificatie,1 Klant,44
-F7 Verhuurdersverklaring,1 Klant,10
-F8 Woningruil & Woningdelen,1 Klant,4
-F9 Wooncoöperatie,1 Klant,23
-G1 Debiteurenbeheer,1 Klant,10
-G2 Prolongeren,1 Klant,8
-G3 Factureren,1 Klant,30
-G4 Incasseren,1 Klant,72
-G5 Betalingsregelingen,1 Klant,45
-G6 Afboeken vorderingen,1 Klant,30
-I1 Service & Verbruik,1 Klant,10
-I2 Service & Verbruik | Jaarlijkse afrekening,1 Klant,10
-I4 Advies Verbruikskosten,1 Klant,10
-X21 Random Item 1,2 Leefbaarheid,6
-X22 Random Item 2,2 Leefbaarheid,5
-X31 Random Item 1,2 Leefbaarheid,2
-X32 Random Item 2,2 Leefbaarheid,8
-X41 Random Item 1,2 Leefbaarheid,6
-X51 Random Item 1,2 Leefbaarheid,10
-X52 Random Item 2,2 Leefbaarheid,6
-X53 Random Item 3,2 Leefbaarheid,8
-X61 Random Item 1,2 Leefbaarheid,9
-X62 Random Item 2,6 Inkoopfacturen,10
-X71 Random Item 1,6 Inkoopfacturen,8
-X72 Random Item 2,6 Inkoopfacturen,6
-X73 Random Item 3,6 Inkoopfacturen,1
-X81 Random Item 1,6 Inkoopfacturen,3
-X82 Random Item 2,6 Inkoopfacturen,10
-X91 Random Item 1,6 Inkoopfacturen,9
-X101 Random Item 1,6 Inkoopfacturen,5
-X102 Random Item 2,6 Inkoopfacturen,6
-X111 Random Item 1,6 Inkoopfacturen,9
-X112 Random Item 2,6 Inkoopfacturen,4
-X113 Random Item 3,6 Inkoopfacturen,7
-X121 Random Item 1,6 Inkoopfacturen,3
-X131 Random Item 1,6 Inkoopfacturen,8
-X132 Random Item 2,6 Inkoopfacturen,4
-X141 Random Item 1,6 Inkoopfacturen,1
-X142 Random Item 2,6 Inkoopfacturen,2
-X151 Random Item 1,6 Inkoopfacturen,2
-X161 Random Item 1,6 Inkoopfacturen,3
-X162 Random Item 2,6 Inkoopfacturen,3
-X163 Random Item 3,6 Inkoopfacturen,1
-X171 Random Item 1,6 Inkoopfacturen,8
-X181 Random Item 1,6 Inkoopfacturen,7
+C1	Reparatie Onderhoud,1 Klant,10
+C2	Mutatie Onderhoud,1 Klant,10
+C3	Planmatig Onderhoud,1 Klant,10
+C4	Woningverbeteringen,1 Klant,10
+C5	Asbestsanering,1 Klant,10
+C6	Energielabels,1 Klant,10
+D1	Nieuwe verhuring,1 Klant,10
+D2	Huurcontract beëindigen,1 Klant,10
+D3	Inspecteren,1 Klant,10
+E1	Huurprijs wijzigen | Jaarlijks,1 Klant,10
+E2	Huurprijs wijzigen | Tussentijds,1 Klant,10
+E3	Huurprijs | Corporatie,1 Klant,10
+E4	Huurprijs | Klant,1 Klant,10
+E5	Tenaamstelling,1 Klant,10
+E6	Medehuurderschap,1 Klant,10
+E7	Inwoning,1 Klant,10
+E8	Huisbewaring,1 Klant,10
+E9	Huurcontract verlengen,1 Klant,10
+F1	Serviceabonnement,1 Klant,10
+F2	Leefbaarheid,1 Klant,10
+F3	Klantcontacten,1 Klant,10
+F4	Klachten & complimenten,1 Klant,10
+F5	Sleutels en naamplaatje,1 Klant,10
+F6	Huurspecificatie,1 Klant,10
+F7	Verhuurdersverklaring,1 Klant,10
+F8	Woningruil & Woningdelen,1 Klant,10
+F9	Wooncoöperatie,1 Klant,10
+G1	Debiteurenbeheer,1 Klant,10
+G2	Prolongeren,1 Klant,10
+G3	Factureren,1 Klant,10
+G4	Incasseren,1 Klant,10
+G5	Betalingsregelingen,1 Klant,10
+G6	Afboeken vorderingen,1 Klant,10
+I1	Service & Verbruik,1 Klant,10
+I2	Service & Verbruik | Jaarlijkse afrekening,1 Klant,10
+I4	Advies Verbruikskosten,1 Klant,10
+K2	Communicatie,1 Klant,10
+F2	Leefbaarheid,2 Leefbaarheid,10
+G4	Incasseren,3 Incasso,10
+G6	Afboeken vorderingen,3 Incasso,10
+L3	Datasynchronisatie,3 Incasso,10
+D1	Nieuwe verhuring,4 Passendheid,10
+E9	Huurcontract verlengen,4 Passendheid,10
+M1	Woningzoekende,4 Passendheid,10
+H4	Inkopen,6 Inkoopfacturen,10
+H5	Inkopen | zonder inkooporder,6 Inkoopfacturen,10
+B1	(her)Ontwikkelen,7 Vastgoedeigendom,10
+B2	Aankopen,7 Vastgoedeigendom,10
+B3	Verkopen,7 Vastgoedeigendom,10
+B4	Aankopen appartementsrechten,7 Vastgoedeigendom,10
+B5	Verkopen appartementsrechten,7 Vastgoedeigendom,10
+B6	Wijzingen exploitatie,7 Vastgoedeigendom,10
+L6	Datakwaliteit,8 Vastgoedbeheer,10
+B1	(her)Ontwikkelen,9 Procurement | Basis,10
+C1	Reparatie Onderhoud,9 Procurement | Basis,10
+C2	Mutatie Onderhoud,9 Procurement | Basis,10
+C4	Woningverbeteringen,9 Procurement | Basis,10
+C6	Energielabels,9 Procurement | Basis,10
+H1	Crediteurenbeheer,9 Procurement | Basis,10
+H2	Inkoopcontracten,9 Procurement | Basis,10
+H3	Aanbesteden,9 Procurement | Basis,10
+H4	Inkopen,9 Procurement | Basis,10
+H5	Inkopen | zonder inkooporder,9 Procurement | Basis,10
+I1	Service & Verbruik,9 Procurement | Basis,10
+I3	Energie Prestatie Vergoeding,9 Procurement | Basis,10
+K3	Facilitair,9 Procurement | Basis,10
+O1	Onderhoudsdienst,9 Procurement | Basis,10
+O2	Magazijnbeheer,9 Procurement | Basis,10
+B1	(her)Ontwikkelen,10 Procurement | Premium,10
+C1	Reparatie Onderhoud,10 Procurement | Premium,10
+C2	Mutatie Onderhoud,10 Procurement | Premium,10
+C3	Planmatig Onderhoud,10 Procurement | Premium,10
+C4	Woningverbeteringen,10 Procurement | Premium,10
+C5	Asbestsanering,10 Procurement | Premium,10
+C6	Energielabels,10 Procurement | Premium,10
+E3	Huurprijs | Corporatie,10 Procurement | Premium,10
+H1	Crediteurenbeheer,10 Procurement | Premium,10
+H2	Inkoopcontracten,10 Procurement | Premium,10
+H3	Aanbesteden,10 Procurement | Premium,10
+H4	Inkopen,10 Procurement | Premium,10
+H5	Inkopen | zonder inkooporder,10 Procurement | Premium,10
+I1	Service & Verbruik,10 Procurement | Premium,10
+I2	Service & Verbruik | Jaarlijkse afrekening,10 Procurement | Premium,10
+I3	Energie Prestatie Vergoeding,10 Procurement | Premium,10
+K3	Facilitair,10 Procurement | Premium,10
+O1	Onderhoudsdienst,10 Procurement | Premium,10
+O2	Magazijnbeheer,10 Procurement | Premium,10
+K5	Relatiebeheer,11 Relatie,10
+L3	Datasynchronisatie,11 Relatie,10
+L6	Datakwaliteit,11 Relatie,10
+K1	Personeel,12 Personeel,10
+A2	Vastgoedsturing,14 MT,10
+A4	Begroting,14 MT,10
+A5	Jaarverslag,14 MT,10
+A8	Klantwaardering,14 MT,10
+J1	Grootboek,14 MT,10
+J2	Bank,14 MT,10
+J3	Betalen,14 MT,10
+J4	Lonen,14 MT,10
+J5	BTW,14 MT,10
+J6	Activa,14 MT,10
+J7	Financiering,14 MT,10
+J8	Verzekeringen,14 MT,10
+J9	Treasury,14 MT,10
+K4	Juridisch,14 MT,10
+A1	Missie & Visie,16 Bestuur,10
+A4	Begroting,16 Bestuur,10
+A5	Jaarverslag,16 Bestuur,10
+A1	Missie & Visie,17 RvC,10
+A4	Begroting,17 RvC,10
+A5	Jaarverslag,17 RvC,10
+A6	dPi,17 RvC,10
+A7	dVi,17 RvC,10
+C.	Vastgoedbeheer,1 Klant,10
+D.	Verhuurmutatie,1 Klant,10
+E.	Huurcontract,1 Klant,10
+F.	Diensten,1 Klant,10
+G.	Debiteuren,1 Klant,10
+I.	Service & Verbruik,1 Klant,10
+L.	ICT,1 Klant,10
+F.	Diensten,2 Leefbaarheid,10
+G.	Debiteuren,3 Incasso,10
+D.	Verhuurmutatie,4 Passendheid,10
+D.	Verhuurmutatie,5 Verkoopfacturen,10
+F.	Diensten,5 Verkoopfacturen,10
+G.	Debiteuren,5 Verkoopfacturen,10
+B.	Vastgoedeigendom,6 Inkoopfacturen,10
+C.	Vastgoedbeheer,6 Inkoopfacturen,10
+D.	Verhuurmutatie,6 Inkoopfacturen,10
+H.	Crediteuren,6 Inkoopfacturen,10
+I.	Service & Verbruik,6 Inkoopfacturen,10
+K.	Organisatie,6 Inkoopfacturen,10
+L.	ICT,6 Inkoopfacturen,10
+O.	Onderhoudsdienst | Eigen beheer,6 Inkoopfacturen,10
+B.	Vastgoedeigendom,7 Vastgoedeigendom,10
+C.	Vastgoedbeheer,8 Vastgoedbeheer,10
+B.	Vastgoedeigendom,9 Procurement | Basis,10
+C.	Vastgoedbeheer,9 Procurement | Basis,10
+D.	Verhuurmutatie,9 Procurement | Basis,10
+F.	Diensten,9 Procurement | Basis,10
+H.	Crediteuren,9 Procurement | Basis,10
+I.	Service & Verbruik,9 Procurement | Basis,10
+K.	Organisatie,9 Procurement | Basis,10
+L.	ICT,9 Procurement | Basis,10
+O.	Onderhoudsdienst | Eigen beheer,9 Procurement | Basis,10
+B.	Vastgoedeigendom,10 Procurement | Premium,10
+C.	Vastgoedbeheer,10 Procurement | Premium,10
+D.	Verhuurmutatie,10 Procurement | Premium,10
+F.	Diensten,10 Procurement | Premium,10
+H.	Crediteuren,10 Procurement | Premium,10
+I.	Service & Verbruik,10 Procurement | Premium,10
+K.	Organisatie,10 Procurement | Premium,10
+L.	ICT,10 Procurement | Premium,10
+O.	Onderhoudsdienst | Eigen beheer,10 Procurement | Premium,10
+H.	Crediteuren,11 Relatie,10
+L.	ICT,11 Relatie,10
+K.	Organisatie,12 Personeel,10
+K.	Organisatie,13 OR,10
+A.	Sturing,14 MT,10
+B.	Vastgoedeigendom,14 MT,10
+K.	Organisatie,14 MT,10
+A.	Sturing,15 Directie,10
+K.	Organisatie,15 Directie,10
+A.	Sturing,16 Bestuur,10
+A.	Sturing,17 RvC,10
+A.	Sturing,18 Compliance,10
+K.	Organisatie,18 Compliance,10
