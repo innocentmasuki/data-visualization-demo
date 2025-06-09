@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useEffect } from 'react'
+import React, {useEffect, useRef} from 'react'
 import * as d3 from 'd3'
 
 export type Relationship = {
@@ -15,12 +15,13 @@ export type ChordDiagramProps = {
     height?: number
 }
 
-export const ChordDiagram: React.FC<ChordDiagramProps> = ({
-                                                              relationships,
-                                                              colors,
-                                                              width = 900,
-                                                              height = 600,
-                                                          }) => {
+export const ChordDiagram: React.FC<ChordDiagramProps> = (
+    {
+        relationships,
+        colors,
+        width = 900,
+        height = 600,
+    }) => {
     const svgRef = useRef<SVGSVGElement>(null)
     const tooltipRef = useRef<HTMLDivElement>(null)
 
@@ -28,23 +29,46 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = ({
         if (!relationships.length) return
 
         // 1) define margins
-        const margin = { top: 40, right: 20, bottom: 40, left: 20 }
+        const margin = {top: 40, right: 20, bottom: 40, left: 20}
         // 2) compute total internal size
         const totalWidth = width + margin.left + margin.right
         const totalHeight = height + margin.top + margin.bottom
 
         // derive unique entities
-        const entities = Array.from(
+        let entities = Array.from(
             new Set(relationships.flatMap((r) => [r.source, r.target]))
         )
+
+        // Sort entities to group by prefix and prioritize C2 items
+        entities = entities.sort((a, b) => {
+            // Extract the prefix (e.g., "C1", "C2", "D1", etc.)
+            const prefixA = a.match(/^([A-Z][0-9]+)/)?.[0] || a;
+            const prefixB = b.match(/^([A-Z][0-9]+)/)?.[0] || b;
+
+            // First, prioritize C2 items
+            if (prefixA === 'C2' && prefixB !== 'C2') return -1;
+            if (prefixA !== 'C2' && prefixB === 'C2') return 1;
+
+            // Then, group by the first character of the prefix (C, D, E, etc.)
+            const categoryA = prefixA.charAt(0);
+            const categoryB = prefixB.charAt(0);
+
+            if (categoryA !== categoryB) {
+                return categoryA.localeCompare(categoryB);
+            }
+
+            // Finally, sort by the full prefix
+            return prefixA.localeCompare(prefixB);
+        });
+
         const indexMap = new Map(entities.map((e, i) => [e, i]))
         const n = entities.length
 
         // build matrix
-        const matrix: number[][] = Array.from({ length: n }, () =>
+        const matrix: number[][] = Array.from({length: n}, () =>
             Array(n).fill(0)
         )
-        relationships.forEach(({ source, target, value }) => {
+        relationships.forEach(({source, target, value}) => {
             matrix[indexMap.get(source)!][indexMap.get(target)!] = value
         })
 
@@ -158,15 +182,77 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = ({
                 const tt = tooltipRef.current
                 if (tt) tt.style.display = 'none'
             })
+
+        // Add legend
+        const legendItemHeight = 20;
+        const legendItemWidth = 150;
+        const legendPadding = 10;
+        const legendItemsPerRow = 2; // Display 2 items per row
+        const maxLegendItems = 20; // Limit the number of items to avoid an overly large legend
+
+        // Get the most important entities (prioritize C2 and limit the total)
+        const legendEntities = entities.slice(0, maxLegendItems);
+
+        // Calculate the number of rows needed
+        const legendRows = Math.ceil(legendEntities.length / legendItemsPerRow);
+        const legendWidth = (legendItemWidth * legendItemsPerRow) + (legendPadding * 2);
+        const legendHeight = (legendRows * legendItemHeight) + legendPadding * 3 + 20; // Extra space for title
+
+        // Create legend container in the bottom right
+        const legend = svg.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${totalWidth - legendWidth - 20}, ${totalHeight - legendHeight - 20})`);
+
+        // Add background for better visibility
+        legend.append('rect')
+            .attr('width', legendWidth)
+            .attr('height', legendHeight)
+            .attr('fill', 'white')
+            .attr('opacity', 0.9)
+            .attr('rx', 5)
+            .attr('ry', 5)
+            .attr('stroke', '#ccc')
+            .attr('stroke-width', 1);
+
+        // Add legend title
+        legend.append('text')
+            .attr('x', legendPadding)
+            .attr('y', legendPadding + 15)
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('Legend');
+
+        // Add legend items
+        legendEntities.forEach((entity, i) => {
+            const row = Math.floor(i / legendItemsPerRow);
+            const col = i % legendItemsPerRow;
+
+            const itemGroup = legend.append('g')
+                .attr('transform', `translate(${col * legendItemWidth + legendPadding}, ${row * legendItemHeight  + 20})`);
+
+            // Add color box
+            itemGroup.append('rect')
+                .attr('width', 12)
+                .attr('height', 12)
+                .attr('fill', colorScale(entity))
+                .attr('stroke', d3.rgb(colorScale(entity)).darker().toString());
+
+            // Add entity name
+            itemGroup.append('text')
+                .attr('x', 16)
+                .attr('y', 10)
+                .attr('font-size', '10px')
+                .text(entity.length > 18 ? entity.substring(0, 15) + '...' : entity);
+        });
     }, [relationships, colors, width, height])
 
     return (
         <div className="w-full h-full relative">
-            <svg ref={svgRef} />
+            <svg ref={svgRef}/>
             <div
                 ref={tooltipRef}
                 className="absolute pointer-events-none bg-gray-700 text-white text-xs rounded px-2 py-1 shadow-md"
-                style={{ display: 'none', position: 'absolute', zIndex: 10 }}
+                style={{display: 'none', position: 'absolute', zIndex: 10}}
             />
         </div>
     )
