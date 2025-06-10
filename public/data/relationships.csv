@@ -111,6 +111,11 @@ A4	Begroting,17 RvC,10
 A5	Jaarverslag,17 RvC,10
 A6	dPi,17 RvC,10
 A7	dVi,17 RvC,10
+A3	Organisatiesturing,03 Incasso,10
+A1	Missie & Visie,15 Directie,10
+A3	Organisatiesturing,15 Directie,10
+A6	dPi,15 Directie,10
+A7	dVi,15 Directie,10
 C.	Vastgoedbeheer,01 Klant,10
 D.	Verhuurmutatie,01 Klant,10
 E.	Huurcontract,01 Klant,10
@@ -165,8 +170,4 @@ A.	Sturing,16 Bestuur,10
 A.	Sturing,17 RvC,10
 A.	Sturing,18 Compliance,10
 K.	Organisatie,18 Compliance,10
-A3	Organisatiesturing,03 Incasso,10
-A1	Missie & Visie,15 Directie,10
-A3	Organisatiesturing,15 Directie,10
-A6	dPi,15 Directie,10
-A7	dVi,15 Directie,10
+
