@@ -146,6 +146,10 @@ const Home: React.FC = () => {
                 </button>
             </div>
 
+            <div className="text-sm bg-amber-50 border border-amber-200 text-amber-900 rounded p-3">
+                Your data is processed locally in your browser and is never saved on any server. Please download and keep your final CSV and images on your own computer. so that next time you upload the CSV and keep editing from where you left off.
+            </div>
+
             {showEditor && (
                 <div className="border rounded p-4">
                     <RelationshipEditor relationships={relationships} setRelationships={setRelationships} />
