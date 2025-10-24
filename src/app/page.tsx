@@ -38,11 +38,16 @@ const Home: React.FC = () => {
         loadStaticCsv()
     }, [])
 
-    const processen = useMemo(() =>
-        relationships.filter(r => /^[A-Z][0-9]/.test(r.source)), [relationships])
+    const processen = relationships
 
     const procesgebieden = useMemo(() =>
         relationships.filter(r => /^[A-Z]\./.test(r.source)), [relationships])
+
+    // Basic dataset validation: ensure non-empty labels and positive numeric values
+    const invalidRows = useMemo(() => relationships
+        .map((r, i) => ({...r, i}))
+        .filter(({source, target, value}) => !source || !target || !Number.isFinite(value) || value <= 0)
+    , [relationships])
 
     const handleFileUpload: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
         const file = e.target.files?.[0]
@@ -158,14 +163,28 @@ const Home: React.FC = () => {
 
             <div className="border rounded p-4 relative">
                 {relationships.length > 0 ? (
-                    <>
-                        <div className={view === 'processen' ? '' : 'hidden'}>
-                            <ChordDiagram relationships={processen} id="chart-processen" />
+                    invalidRows.length > 0 ? (
+                        <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3">
+                            <div className="font-medium mb-1">Cannot render diagrams: {invalidRows.length} invalid item(s) detected.</div>
+                            <ul className="list-disc pl-5">
+                                {invalidRows.slice(0, 5).map(r => (
+                                    <li key={r.i}>Row {r.i + 1}: source &#34;{r.source || '—'}&#34;, target &#34;{r.target || '—'}&#34;, value &#34;{String(r.value)}&#34;</li>
+                                ))}
+                            </ul>
+                            {invalidRows.length > 5 && (
+                                <div className="mt-1 opacity-70">+ {invalidRows.length - 5} more…</div>
+                            )}
                         </div>
-                        <div className={view === 'procesgebieden' ? '' : 'hidden'}>
-                            <ChordDiagram relationships={procesgebieden} id="chart-procesgebieden" />
-                        </div>
-                    </>
+                    ) : (
+                        <>
+                            <div className={view === 'processen' ? '' : 'hidden'}>
+                                <ChordDiagram relationships={processen} id="chart-processen" />
+                            </div>
+                            <div className={view === 'procesgebieden' ? '' : 'hidden'}>
+                                <ChordDiagram relationships={procesgebieden} id="chart-procesgebieden" />
+                            </div>
+                        </>
+                    )
                 ) : (
                     <p className="text-gray-500 text-center">Loading...</p>
                 )}
