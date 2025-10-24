@@ -1,7 +1,6 @@
 'use client'
 import React, {useEffect, useRef} from 'react'
 import * as d3 from 'd3'
-import {twMerge} from "tailwind-merge";
 
 export type Relationship = {
     source: string
@@ -29,6 +28,12 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
     const tooltipRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
+        // Always clear previous drawing so we don't show stale charts when data changes or becomes empty
+        const svg = d3.select(svgRef.current)
+        svg.selectAll('*').remove()
+        const tt = tooltipRef.current
+        if (tt) tt.style.display = 'none'
+
         if (!relationships.length) return
 
         const margin = {top: 150, right: 80, bottom: 250, left: 20}
@@ -65,9 +70,6 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
 
         const innerRadius = Math.min(width, height) * 0.5 - 40
         const outerRadius = innerRadius + 10
-
-        const svg = d3.select(svgRef.current)
-        svg.selectAll('*').remove()
 
         svg
             .attr('viewBox', `0 0 ${totalWidth} ${totalHeight}`)
@@ -118,7 +120,7 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
                 ;(d as any).angle = (d.startAngle + d.endAngle) / 2
             })
             .attr('dy', '.35em')
-            .attr('class', twMerge('text-red-500!'))
+            .attr('class', 'chord-label')
             .attr('transform', (d) => {
                 const angle = (d as any).angle
                 const rotate = (angle * 180) / Math.PI - 90

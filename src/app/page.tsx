@@ -41,7 +41,7 @@ const Home: React.FC = () => {
     const processen = relationships
 
     const procesgebieden = useMemo(() =>
-        relationships.filter(r => /^[A-Z]\./.test(r.source)), [relationships])
+        relationships.filter(r => /^[A-Z]\.(?=\s|$)/.test(r.source)), [relationships])
 
     // Basic dataset validation: ensure non-empty labels and positive numeric values
     const invalidRows = useMemo(() => relationships
