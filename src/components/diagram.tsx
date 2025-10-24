@@ -69,7 +69,7 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
 
         // Partition entities by classification
         const containers: string[] = []
-        const procesgebiedenByLetter = new Map<string, string>() // letter -> label
+        const procesgebiedenByLetter = new Map<string, string[]>() // letter -> labels (can be multiple)
         const processenByLetter = new Map<string, string[]>() // letter -> labels
         const others: string[] = []
 
@@ -80,7 +80,12 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
             } else if (cls === 'procesgebied') {
                 const code = extractCode(e) // e.g., A.
                 const letter = extractLetter(code)
-                if (letter) procesgebiedenByLetter.set(letter, e)
+                if (letter) {
+                    if (!procesgebiedenByLetter.has(letter)) procesgebiedenByLetter.set(letter, [])
+                    procesgebiedenByLetter.get(letter)!.push(e)
+                } else {
+                    others.push(e)
+                }
             } else if (cls === 'proces') {
                 const code = extractCode(e) // e.g., A12
                 const letter = extractLetter(code)
@@ -111,8 +116,10 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
         ])
         const sortedLetters = Array.from(lettersPresent).sort((a, b) => a.localeCompare(b))
         for (const letter of sortedLetters) {
-            const pg = procesgebiedenByLetter.get(letter)
-            if (pg) letterOrder.push(pg)
+            const pgs = procesgebiedenByLetter.get(letter) || []
+            // Keep stable order, but ensure deterministic by sorting by code token
+            pgs.sort((a, b) => extractCode(a).localeCompare(extractCode(b)))
+            letterOrder.push(...pgs)
             const procs = processenByLetter.get(letter) || []
             procs.sort((a, b) => {
                 const ca = extractCode(a)
@@ -137,7 +144,14 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
             Array(n).fill(0)
         )
         relationships.forEach(({source, target, value}) => {
-            matrix[indexMap.get(source)!][indexMap.get(target)!] = value
+            const si = indexMap.get(source)
+            const ti = indexMap.get(target)
+            if (si === undefined || ti === undefined) {
+                // Safety guard to avoid runtime crash; entity might be temporarily missing during rapid edits
+                console.warn('Skipping relationship with missing entity in indexMap', {source, target})
+                return
+            }
+            matrix[si][ti] = value
         })
 
         const innerRadius = Math.min(width, height) * 0.5 - 40
