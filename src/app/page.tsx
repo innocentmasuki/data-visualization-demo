@@ -1,10 +1,12 @@
 'use client'
 import React, {useEffect, useMemo, useState} from 'react'
 import { ChordDiagram, Relationship } from '@/components/diagram'
+import RelationshipEditor from '@/components/RelationshipEditor'
 
 const Home: React.FC = () => {
     const [relationships, setRelationships] = useState<Relationship[]>([])
     const [view, setView] = useState<'processen' | 'procesgebieden'>('processen')
+    const [showEditor, setShowEditor] = useState(false)
 
     const parseCSV = (csv: string): Relationship[] => {
         return csv
@@ -138,7 +140,17 @@ const Home: React.FC = () => {
                 <button className="ml-auto px-3 py-1.5 text-sm border rounded" onClick={downloadBoth}>
                     Download both charts (PNG)
                 </button>
+
+                <button className="px-3 py-1.5 text-sm border rounded" onClick={() => setShowEditor(s => !s)}>
+                    {showEditor ? 'Hide' : 'Show'} editor (drag & drop)
+                </button>
             </div>
+
+            {showEditor && (
+                <div className="border rounded p-4">
+                    <RelationshipEditor relationships={relationships} setRelationships={setRelationships} />
+                </div>
+            )}
 
             <div className="border rounded p-4 relative">
                 {relationships.length > 0 ? (
@@ -154,6 +166,8 @@ const Home: React.FC = () => {
                     <p className="text-gray-500 text-center">Loading...</p>
                 )}
             </div>
+
+
         </div>
     )
 }
