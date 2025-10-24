@@ -1,17 +1,16 @@
 "use client"
-import React, { useMemo, useState } from "react"
-import { Relationship } from "./diagram"
+import React, { useMemo, useState } from 'react'
+import { Relationship } from './diagram'
 
 export type RelationshipEditorProps = {
   relationships: Relationship[]
-  setRelationships: (rels: Relationship[]) => void
+  setRelationships: React.Dispatch<React.SetStateAction<Relationship[]>>
 }
 
-// Utility to download text as file
 const downloadText = (filename: string, text: string) => {
-  const blob = new Blob([text], { type: "text/csv;charset=utf-8;" })
+  const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
+  const a = document.createElement('a')
   a.href = url
   a.download = filename
   document.body.appendChild(a)
@@ -20,75 +19,33 @@ const downloadText = (filename: string, text: string) => {
   URL.revokeObjectURL(url)
 }
 
-const toCsv = (rels: Relationship[]) =>
-  rels.map(r => `${r.source},${r.target},${r.value}`).join("\n")
-
-const clean = (s: string) => s.replace(/\s+/g, " ").trim()
-
+const toCsv = (rels: Relationship[]) => rels.map(r => `${r.source},${r.target},${r.value}`).join('\n')
+const clean = (s: string) => s.replace(/\s+/g, ' ').trim()
 const defaultNewValue = 10
 
-const RelationshipCard: React.FC<{
-  rel: Relationship
-  index: number
-  onDelete: (index: number) => void
-  onEditSource: (oldSource: string, nextSource: string) => void
-}> = ({ rel, index, onDelete, onEditSource }) => {
+const RelationshipCard: React.FC<{ rel: Relationship; index: number; onDelete: (i:number)=>void; onEditSource:(oldS:string,nextS:string)=>void }> = ({ rel, index, onDelete, onEditSource }) => {
   const [editing, setEditing] = useState(false)
   const [localSource, setLocalSource] = useState(rel.source)
-
   return (
-    <div
-      className="bg-white border rounded p-2 shadow-sm mb-2 cursor-grab"
-      draggable
-      onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", String(index))
-        // give some drag image offset
-        const img = document.createElement("div")
-        img.style.padding = "4px 8px"
-        img.style.background = "#eee"
-        img.style.position = "absolute"
-        img.style.top = "-1000px"
-        img.style.left = "-1000px"
-        img.textContent = rel.source
-        document.body.appendChild(img)
-        e.dataTransfer.setDragImage(img, 0, 0)
-        setTimeout(() => img.remove(), 0)
-      }}
-    >
+    <div className='bg-white border rounded p-2 shadow-sm mb-2 cursor-grab' draggable onDragStart={e => { e.dataTransfer.setData('text/plain', String(index)) }}>
       {!editing ? (
-        <div className="flex items-start gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="font-medium truncate" title={rel.source}>{rel.source}</div>
-            <div className="text-xs text-gray-500">value: {rel.value}</div>
+        <div className='flex items-start gap-2'>
+          <div className='flex-1 min-w-0'>
+            <div className='font-medium truncate' title={rel.source}>{rel.source}</div>
+            <div className='text-xs text-gray-500'>value: {rel.value}</div>
           </div>
-          <div className="flex items-center gap-1">
-            <button className="text-xs px-2 py-1 border rounded" onClick={() => setEditing(true)}>Edit</button>
-            <button className="text-xs px-2 py-1 border rounded text-red-600" onClick={() => onDelete(index)}>Delete</button>
+          <div className='flex items-center gap-1'>
+            <button className='text-xs px-2 py-1 border rounded' onClick={() => setEditing(true)}>Edit</button>
+            <button className='text-xs px-2 py-1 border rounded text-red-600' onClick={() => onDelete(index)}>Delete</button>
           </div>
         </div>
       ) : (
-        <div className="space-y-2">
-          <div className="text-xs text-gray-600">Editing this source will update all relationships with the same source label.</div>
-          <input
-            className="w-full border rounded px-2 py-1 text-sm"
-            value={localSource}
-            onChange={e => setLocalSource(e.target.value)}
-            placeholder="Source label (e.g., C1 Reparatie Onderhoud or C. Vastgoedbeheer)"
-          />
-          <div className="flex gap-2">
-            <button
-              className="text-xs px-2 py-1 border rounded bg-blue-600 text-white"
-              onClick={() => {
-                const src = clean(localSource)
-                if (!src) return alert("Source cannot be empty")
-                onEditSource(rel.source, src)
-                setEditing(false)
-              }}
-            >Save</button>
-            <button className="text-xs px-2 py-1 border rounded" onClick={() => {
-              setLocalSource(rel.source)
-              setEditing(false)
-            }}>Cancel</button>
+        <div className='space-y-2'>
+          <div className='text-xs text-gray-600'>Editing this source will update all relationships with the same source label.</div>
+          <input className='w-full border rounded px-2 py-1 text-sm' value={localSource} onChange={e => setLocalSource(e.target.value)} />
+          <div className='flex gap-2'>
+            <button className='text-xs px-2 py-1 border rounded bg-blue-600 text-white' onClick={() => { const src = clean(localSource); if (!src) return alert('Source cannot be empty'); onEditSource(rel.source, src); setEditing(false) }}>Save</button>
+            <button className='text-xs px-2 py-1 border rounded' onClick={() => { setLocalSource(rel.source); setEditing(false) }}>Cancel</button>
           </div>
         </div>
       )}
@@ -98,13 +55,12 @@ const RelationshipCard: React.FC<{
 
 export const RelationshipEditor: React.FC<RelationshipEditorProps> = ({ relationships, setRelationships }) => {
   const columns = useMemo(() => {
-    const map = new Map<string, { target: string, items: { rel: Relationship, index: number }[] }>()
+    const map = new Map<string, { target: string; items: { rel: Relationship; index: number }[] }>()
     relationships.forEach((rel, index) => {
-      const key = rel.target
-      if (!map.has(key)) map.set(key, { target: key, items: [] })
-      map.get(key)!.items.push({ rel, index })
+      if (!map.has(rel.target)) map.set(rel.target, { target: rel.target, items: [] })
+      map.get(rel.target)!.items.push({ rel, index })
     })
-    return Array.from(map.values()).sort((a, b) => a.target.localeCompare(b.target))
+    return Array.from(map.values()).sort((a,b)=>a.target.localeCompare(b.target))
   }, [relationships])
 
   const [newType, setNewType] = useState<'proces' | 'gebied' | 'free'>('proces')
@@ -112,335 +68,145 @@ export const RelationshipEditor: React.FC<RelationshipEditorProps> = ({ relation
   const [newName, setNewName] = useState('')
   const [newTarget, setNewTarget] = useState('')
   const [newTargetMode, setNewTargetMode] = useState<'select' | 'custom'>('select')
-
-  // Inline field errors for the add form
-  const [codeError, setCodeError] = useState<string>('')
-  const [nameError, setNameError] = useState<string>('')
-  const [targetError, setTargetError] = useState<string>('')
-
-  // UI state for quick-add in columns and add-column placeholder
+  const [codeError, setCodeError] = useState('')
+  const [nameError, setNameError] = useState('')
+  const [targetError, setTargetError] = useState('')
   const [addForTarget, setAddForTarget] = useState<string | null>(null)
-  const [selectedExistingSource, setSelectedExistingSource] = useState<string>('')
-  const [quickAddError, setQuickAddError] = useState<string>('')
-  const [showAddColumn, setShowAddColumn] = useState<boolean>(false)
-  const [newColumnName, setNewColumnName] = useState<string>('')
-  const [selectedSourceForNewColumn, setSelectedSourceForNewColumn] = useState<string>('')
-  const [addColumnError, setAddColumnError] = useState<string>('')
+  const [selectedExistingSource, setSelectedExistingSource] = useState('')
+  const [quickAddError, setQuickAddError] = useState('')
+  const [showAddColumn, setShowAddColumn] = useState(false)
+  const [newColumnName, setNewColumnName] = useState('')
+  const [selectedSourceForNewColumn, setSelectedSourceForNewColumn] = useState('')
+  const [addColumnError, setAddColumnError] = useState('')
 
-  const allTargets = useMemo(() => Array.from(new Set(relationships.map(r => r.target))).sort(), [relationships])
-  const allSources = useMemo(() => Array.from(new Set(relationships.map(r => r.source))).sort(), [relationships])
+  const allTargets = useMemo(() => Array.from(new Set(relationships.map(r=>r.target))).sort(), [relationships])
+  const allSources = useMemo(() => Array.from(new Set(relationships.map(r=>r.source))).sort(), [relationships])
 
-  const moveToTarget = (index: number, newTargetName: string) => {
+  const moveToTarget = (index:number, newTargetName:string) => {
     const target = clean(newTargetName)
-    if (!Number.isInteger(index as unknown as number) || !target) return
-    setRelationships(prev => {
+    if (!Number.isInteger(index) || !target) return
+    setRelationships((prev: Relationship[]) => {
       if (!prev[index]) return prev
       const next = [...prev]
       next[index] = { ...next[index], target }
       return next
     })
   }
-
-  const deleteRel = (index: number) => {
-    setRelationships(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const editSource = (oldSource: string, nextSource: string) => {
-    setRelationships(prev => prev.map(r => r.source === oldSource ? { ...r, source: nextSource } : r))
-  }
-
-
-  const renameTarget = (oldTarget: string, nextTarget: string) => {
-    const to = clean(nextTarget)
-    if (!to) return
-    setRelationships(prev => prev.map(r => r.target === oldTarget ? { ...r, target: to } : r))
-  }
+  const deleteRel = (index:number) => setRelationships((p:Relationship[]) => p.filter((_,i)=>i!==index))
+  const editSource = (oldSource:string, nextSource:string) => setRelationships((p:Relationship[]) => p.map(r=> r.source===oldSource?{...r,source:nextSource}:r))
+  const renameTarget = (oldTarget:string, nextTarget:string) => { const to = clean(nextTarget); if(!to) return; setRelationships((p:Relationship[])=>p.map(r=> r.target===oldTarget?{...r,target:to}:r)) }
 
   const addRelationship = () => {
-    // reset errors
-    setCodeError('')
-    setNameError('')
-    setTargetError('')
-
-    const codeClean = clean(newCode)
-    const nameClean = clean(newName)
-    const targetClean = clean(newTarget)
-
+    setCodeError(''); setNameError(''); setTargetError('')
+    const codeClean = clean(newCode); const nameClean = clean(newName); const targetClean = clean(newTarget)
     let hasError = false
-
-    if (!codeClean) {
-      setCodeError('Please enter a code')
-      hasError = true
-    } else {
-      if (newType === 'proces' && !/^[A-Z][0-9]+$/.test(codeClean)) {
-        setCodeError('Invalid code. Expected like C1, D3, etc.')
-        hasError = true
-      }
-      if (newType === 'gebied' && !/^[A-Z]\.$/.test(codeClean)) {
-        setCodeError('Invalid code. Expected like C. , D. , etc.')
-        hasError = true
-      }
+    if(!codeClean){ setCodeError('Please enter a code'); hasError = true } else {
+      if(newType==='proces' && !/^[A-Z][0-9]+$/.test(codeClean)){ setCodeError('Invalid code'); hasError = true }
+      if(newType==='gebied' && !/^[A-Z]\.$/.test(codeClean)){ setCodeError('Invalid code'); hasError = true }
     }
-
-    if (!nameClean) {
-      setNameError('Please enter a name')
-      hasError = true
-    }
-
-    if (!targetClean) {
-      setTargetError('Please select or enter a target container')
-      hasError = true
-    }
-
-
+    if(!nameClean){ setNameError('Please enter a name'); hasError = true }
+    if(!targetClean){ setTargetError('Please select or enter a target'); hasError = true }
     const src = `${codeClean} ${nameClean}`
-
-    if (!hasError) {
-      const duplicate = relationships.some(r => r.source === src && r.target === targetClean)
-      if (duplicate) {
-        setTargetError('This relationship already exists')
-        hasError = true
-      }
-    }
-
-    if (hasError) return
-
-    const value = defaultNewValue
-    setRelationships(prev => [...prev, { source: src, target: targetClean, value }])
-    setNewName("")
-    setNewCode("A1")
-    setNewTarget("")
+    if(!hasError && relationships.some(r=> r.source===src && r.target===targetClean)){ setTargetError('Relationship exists'); hasError = true }
+    if(hasError) return
+    setRelationships((p:Relationship[]) => [...p, { source: src, target: targetClean, value: defaultNewValue }])
+    setNewName(''); setNewCode('A1'); setNewTarget('')
   }
 
-  const handleDropOnColumn = (e: React.DragEvent<HTMLDivElement>, target: string) => {
-    e.preventDefault()
-    const id = e.dataTransfer.getData("text/plain")
-    const index = Number(id)
-    if (!Number.isInteger(index)) return
-    moveToTarget(index, target)
-  }
+  const handleDropOnColumn = (e:React.DragEvent<HTMLDivElement>, target:string) => { e.preventDefault(); const id = e.dataTransfer.getData('text/plain'); const idx = Number(id); if(!Number.isInteger(idx)) return; moveToTarget(idx, target) }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          className="px-3 py-1.5 text-sm border rounded"
-          onClick={() => downloadText("relationships.csv", toCsv(relationships))}
-        >
-          Download edited CSV
-        </button>
+    <div className='space-y-4'>
+      <div className='flex flex-wrap items-center gap-2'>
+        <button className='px-3 py-1.5 text-sm border rounded' onClick={()=>downloadText('relationships.csv', toCsv(relationships))}>Download edited CSV</button>
       </div>
-
-      <div className="border rounded p-3 bg-gray-50">
-        <div className="font-medium mb-2">Add new relationship</div>
-        <div className="grid gap-2 md:grid-cols-4">
-          <div className="flex items-center gap-2">
-            <label className="text-sm whitespace-nowrap">Type</label>
-            <select
-              className="border rounded px-2 py-1 text-sm"
-              value={newType}
-              onChange={e => setNewType(e.target.value as any)}
-            >
-              <option value="proces">Proces (e.g., C1)</option>
-              <option value="gebied">Procesgebied (e.g., C.)</option>
-              <option value="free">Free</option>
+      <div className='border rounded p-3 bg-gray-50'>
+        <div className='font-medium mb-2'>Add new relationship</div>
+        <div className='grid gap-2 md:grid-cols-4'>
+          <div className='flex items-center gap-2'>
+            <label className='text-sm whitespace-nowrap'>Type</label>
+            <select className='border rounded px-2 py-1 text-sm' value={newType} onChange={e=>setNewType(e.target.value as any)}>
+              <option value='proces'>Proces</option>
+              <option value='gebied'>Procesgebied</option>
+              <option value='free'>Free</option>
             </select>
           </div>
           <div>
-            <input
-              className={`w-full border rounded px-2 py-1 text-sm ${codeError ? 'border-red-500' : ''}`}
-              placeholder={newType === 'gebied' ? 'Code (e.g., C.)' : 'Code (e.g., C1)'}
-              value={newCode}
-              onChange={e => setNewCode(e.target.value)}
-            />
-            {codeError && <div className="text-xs text-red-600 mt-1">{codeError}</div>}
+            <input className={`w-full border rounded px-2 py-1 text-sm ${codeError?'border-red-500':''}`} value={newCode} onChange={e=>setNewCode(e.target.value)} placeholder={newType==='gebied'?'Code (e.g., C.)':'Code (e.g., C1)'} />
+            {codeError && <div className='text-xs text-red-600 mt-1'>{codeError}</div>}
           </div>
-          <div className="md:col-span-2">
-            <input
-              className={`w-full border rounded px-2 py-1 text-sm ${nameError ? 'border-red-500' : ''}`}
-              placeholder="Name (e.g., Reparatie Onderhoud)"
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-            />
-            {nameError && <div className="text-xs text-red-600 mt-1">{nameError}</div>}
+          <div className='md:col-span-2'>
+            <input className={`w-full border rounded px-2 py-1 text-sm ${nameError?'border-red-500':''}`} value={newName} onChange={e=>setNewName(e.target.value)} placeholder='Name (e.g., Reparatie Onderhoud)' />
+            {nameError && <div className='text-xs text-red-600 mt-1'>{nameError}</div>}
           </div>
           <div>
-            {newTargetMode === 'select' ? (
-              <>
-                <select
-                  className={`w-full border rounded px-2 py-1 text-sm ${targetError ? 'border-red-500' : ''}`}
-                  value={newTarget || ''}
-                  onChange={e => {
-                    const val = e.target.value
-                    if (val === '__new__') {
-                      setNewTargetMode('custom')
-                      setNewTarget('')
-                    } else {
-                      setNewTarget(val)
-                    }
-                  }}
-                >
-                  <option value="">Select container…</option>
-                  {allTargets.map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                  <option value="__new__">➕ New container…</option>
-                </select>
-                {targetError && <div className="text-xs text-red-600 mt-1">{targetError}</div>}
-              </>
-            ) : (
-              <>
-                <div className="flex gap-2">
-                  <input
-                    className={`w-full border rounded px-2 py-1 text-sm ${targetError ? 'border-red-500' : ''}`}
-                    placeholder="New container name (e.g., 19 Something)"
-                    value={newTarget}
-                    onChange={e => setNewTarget(e.target.value)}
-                  />
-                  <button className="px-2 border rounded text-sm" onClick={() => setNewTargetMode('select')}>×</button>
-                </div>
-                {targetError && <div className="text-xs text-red-600 mt-1">{targetError}</div>}
-              </>
-            )}
+            {newTargetMode==='select' ? (<>
+              <select className={`w-full border rounded px-2 py-1 text-sm ${targetError?'border-red-500':''}`} value={newTarget || ''} onChange={e=>{const val=e.target.value; if(val==='__new__'){setNewTargetMode('custom'); setNewTarget('')} else setNewTarget(val)}}>
+                <option value=''>Select container…</option>
+                {allTargets.map(t=> <option key={t} value={t}>{t}</option>)}
+                <option value='__new__'>➕ New container…</option>
+              </select>
+              {targetError && <div className='text-xs text-red-600 mt-1'>{targetError}</div>}
+            </>) : (<>
+              <div className='flex gap-2'>
+                <input className={`w-full border rounded px-2 py-1 text-sm ${targetError?'border-red-500':''}`} value={newTarget} onChange={e=>setNewTarget(e.target.value)} placeholder='New container name' />
+                <button className='px-2 border rounded text-sm' onClick={()=>setNewTargetMode('select')}>×</button>
+              </div>
+              {targetError && <div className='text-xs text-red-600 mt-1'>{targetError}</div>}
+            </>)}
           </div>
         </div>
-        <div className="mt-2">
-          <button className="px-3 py-1.5 text-sm border rounded bg-blue-600 text-white" onClick={addRelationship}>Add</button>
+        <div className='mt-2'>
+          <button className='px-3 py-1.5 text-sm border rounded bg-blue-600 text-white' onClick={addRelationship}>Add</button>
         </div>
       </div>
-
-      <div className="overflow-x-auto">
-        <div className="min-w-[800px] grid gap-10" style={{ gridTemplateColumns: `repeat(${Math.max(columns.length + 1, 1)}, minmax(220px, 1fr))` }}>
-          {columns.length === 0 ? (
-            <div className="text-gray-500">No relationships yet. Add one above to get started.</div>
-          ) : (
-            <>
-              {columns.map(col => (
-                <div key={col.target} className="bg-gray-100 rounded border p-2"
-                     onDragOver={(e) => e.preventDefault()}
-                     onDrop={(e) => handleDropOnColumn(e, col.target)}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <input
-                      className="flex-1 border rounded px-2 py-1 text-sm bg-white"
-                      value={col.target}
-                      onChange={e => renameTarget(col.target, e.target.value)}
-                      title="Rename target: updates all relationships in this column"
-                    />
-                    <button
-                      className="ml-auto text-xs px-2 py-1 border rounded"
-                      title="Add existing source to this column"
-                      onClick={() => {
-                        setAddForTarget(prev => prev === col.target ? null : col.target)
-                        setSelectedExistingSource('')
-                        setQuickAddError('')
-                      }}
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  {addForTarget === col.target && (
-                    <div className="bg-white border rounded p-2 mb-2">
-                      <div className="grid gap-2">
-                        <select
-                          className="w-full border rounded px-2 py-1 text-sm"
-                          value={selectedExistingSource}
-                          onChange={e => setSelectedExistingSource(e.target.value)}
-                        >
-                          <option value="">Select existing source…</option>
-                          {allSources.map(s => (
-                            <option key={s} value={s} disabled={col.items.some(i => i.rel.source === s)}>
-                              {s}{col.items.some(i => i.rel.source === s) ? ' (already in column)' : ''}
-                            </option>
-                          ))}
-                        </select>
-                        {quickAddError && <div className="text-xs text-red-600">{quickAddError}</div>}
-                        <div className="flex gap-2">
-                          <button
-                            className="text-xs px-2 py-1 border rounded bg-blue-600 text-white"
-                            onClick={() => {
-                              setQuickAddError('')
-                              const src = clean(selectedExistingSource)
-                              if (!src) { setQuickAddError('Please select a source'); return }
-                              if (relationships.some(r => r.source === src && r.target === col.target)) { setQuickAddError('This relationship already exists'); return }
-                              setRelationships(prev => [...prev, { source: src, target: col.target, value: defaultNewValue }])
-                              setSelectedExistingSource('')
-                              setAddForTarget(null)
-                            }}
-                          >Add</button>
-                          <button
-                            className="text-xs px-2 py-1 border rounded"
-                            onClick={() => { setAddForTarget(null); setQuickAddError('') }}
-                          >Cancel</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    {col.items.map(({ rel, index }) => (
-                      <RelationshipCard
-                        key={`${rel.source}->${rel.target}#${index}`}
-                        rel={rel}
-                        index={index}
-                        onDelete={deleteRel}
-                        onEditSource={editSource}
-                      />
-                    ))}
-                  </div>
+      <div className='overflow-x-auto'>
+        <div className='min-w-[800px] grid gap-10' style={{gridTemplateColumns:`repeat(${Math.max(columns.length+1,1)}, minmax(220px,1fr))`}}>
+          {columns.length===0 ? <div className='text-gray-500'>No relationships yet.</div> : <>
+            {columns.map(col => (
+              <div key={col.target} className='bg-gray-100 rounded border p-2' onDragOver={e=>e.preventDefault()} onDrop={e=>handleDropOnColumn(e,col.target)}>
+                <div className='flex items-center gap-2 mb-2'>
+                  <input className='flex-1 border rounded px-2 py-1 text-sm bg-white' value={col.target} onChange={e=>renameTarget(col.target, e.target.value)} />
+                  <button className='ml-auto text-xs px-2 py-1 border rounded' onClick={()=>{ setAddForTarget(p=>p===col.target?null:col.target); setSelectedExistingSource(''); setQuickAddError('') }}>+</button>
                 </div>
-              ))}
-
-              <div key="__add_column__" className="border-2 border-dashed rounded p-2 flex flex-col justify-start items-center text-gray-600 hover:bg-gray-50 min-h-[120px]">
-                {!showAddColumn ? (
-                  <button className="text-sm px-3 py-1.5 border rounded" onClick={() => { setShowAddColumn(true); setAddColumnError('') }}>
-                    + Add column
-                  </button>
-                ) : (
-                  <div className="w-full">
-                    <div className="font-medium mb-1">New column</div>
-                    <div className="grid gap-2">
-                      <input
-                        className="w-full border rounded px-2 py-1 text-sm"
-                        placeholder="Container name (e.g., 19 New Container)"
-                        value={newColumnName}
-                        onChange={e => setNewColumnName(e.target.value)}
-                      />
-                      <select
-                        className="w-full border rounded px-2 py-1 text-sm"
-                        value={selectedSourceForNewColumn}
-                        onChange={e => setSelectedSourceForNewColumn(e.target.value)}
-                      >
-                        <option value="">Select existing source…</option>
-                        {allSources.map(s => (<option key={s} value={s}>{s}</option>))}
+                {addForTarget===col.target && (
+                  <div className='bg-white border rounded p-2 mb-2'>
+                    <div className='grid gap-2'>
+                      <select className='w-full border rounded px-2 py-1 text-sm' value={selectedExistingSource} onChange={e=>setSelectedExistingSource(e.target.value)}>
+                        <option value=''>Select existing source…</option>
+                        {allSources.map(s=> <option key={s} value={s} disabled={col.items.some(i=>i.rel.source===s)}>{s}{col.items.some(i=>i.rel.source===s)?' (already in column)':''}</option>)}
                       </select>
-                      {addColumnError && <div className="text-xs text-red-600">{addColumnError}</div>
-                      }
-                      <div className="flex gap-2">
-                        <button
-                          className="text-xs px-2 py-1 border rounded bg-blue-600 text-white"
-                          onClick={() => {
-                            setAddColumnError('')
-                            const target = clean(newColumnName)
-                            const src = clean(selectedSourceForNewColumn)
-                            if (!target) { setAddColumnError('Please enter a column (container) name'); return }
-                            if (!src) { setAddColumnError('Please select a source'); return }
-                            if (relationships.some(r => r.source === src && r.target === target)) { setAddColumnError('This relationship already exists'); return }
-                            setRelationships(prev => [...prev, { source: src, target, value: defaultNewValue }])
-                            setNewColumnName('')
-                            setSelectedSourceForNewColumn('')
-                            setShowAddColumn(false)
-                          }}
-                        >Add</button>
-                        <button className="text-xs px-2 py-1 border rounded" onClick={() => { setShowAddColumn(false); setAddColumnError('') }}>Cancel</button>
+                      {quickAddError && <div className='text-xs text-red-600'>{quickAddError}</div>}
+                      <div className='flex gap-2'>
+                        <button className='text-xs px-2 py-1 border rounded bg-blue-600 text-white' onClick={()=>{ setQuickAddError(''); const src=clean(selectedExistingSource); if(!src){setQuickAddError('Please select a source'); return} if(relationships.some(r=>r.source===src && r.target===col.target)){ setQuickAddError('Already exists'); return } setRelationships((p:Relationship[])=>[...p,{source:src,target:col.target,value:defaultNewValue}]); setSelectedExistingSource(''); setAddForTarget(null) }}>Add</button>
+                        <button className='text-xs px-2 py-1 border rounded' onClick={()=>{ setAddForTarget(null); setQuickAddError('') }}>Cancel</button>
                       </div>
                     </div>
                   </div>
                 )}
+                <div>
+                  {col.items.map(({rel,index}) => <RelationshipCard key={rel.source+"->"+rel.target+"#"+index} rel={rel} index={index} onDelete={deleteRel} onEditSource={editSource} />)}
+                </div>
               </div>
-            </>
-          )}
+            ))}
+            <div className='border-2 border-dashed rounded p-2 flex flex-col justify-start items-center text-gray-600 hover:bg-gray-50 min-h-[120px]'>
+              {!showAddColumn ? <button className='text-sm px-3 py-1.5 border rounded' onClick={()=>{ setShowAddColumn(true); setAddColumnError('') }}>+ Add column</button> : <div className='w-full'>
+                <div className='font-medium mb-1'>New column</div>
+                <div className='grid gap-2'>
+                  <input className='w-full border rounded px-2 py-1 text-sm' value={newColumnName} onChange={e=>setNewColumnName(e.target.value)} placeholder='Container name' />
+                  <select className='w-full border rounded px-2 py-1 text-sm' value={selectedSourceForNewColumn} onChange={e=>setSelectedSourceForNewColumn(e.target.value)}>
+                    <option value=''>Select existing source…</option>
+                    {allSources.map(s=> <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  {addColumnError && <div className='text-xs text-red-600'>{addColumnError}</div>}
+                  <div className='flex gap-2'>
+                    <button className='text-xs px-2 py-1 border rounded bg-blue-600 text-white' onClick={()=>{ setAddColumnError(''); const target=clean(newColumnName); const src=clean(selectedSourceForNewColumn); if(!target){ setAddColumnError('Enter column name'); return } if(!src){ setAddColumnError('Select a source'); return } if(relationships.some(r=>r.source===src && r.target===target)){ setAddColumnError('Already exists'); return } setRelationships((p:Relationship[])=>[...p,{source:src,target,value:defaultNewValue}]); setNewColumnName(''); setSelectedSourceForNewColumn(''); setShowAddColumn(false) }}>Add</button>
+                    <button className='text-xs px-2 py-1 border rounded' onClick={()=>{ setShowAddColumn(false); setAddColumnError('') }}>Cancel</button>
+                  </div>
+                </div>
+              </div>}
+            </div>
+          </>}
         </div>
       </div>
     </div>
