@@ -44,19 +44,91 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
             new Set(relationships.flatMap((r) => [r.source, r.target]))
         )
 
-        entities = entities.sort((a, b) => {
-            const prefixA = a.match(/^([A-Z][0-9]+)/)?.[0] || a;
-            const prefixB = b.match(/^([A-Z][0-9]+)/)?.[0] || b;
+        // Classification for better grouping & styling
+        const classify = (label: string): 'container' | 'procesgebied' | 'proces' | 'other' => {
+            if (/^\d+(\s|$)/.test(label)) return 'container' // any leading number defines a container
+            if (/^[A-Z]\.(\s|$)/.test(label)) return 'procesgebied'
+            if (/^[A-Z][0-9]+(\s|$)/.test(label)) return 'proces'
+            return 'other'
+        }
 
-            const categoryA = prefixA.charAt(0);
-            const categoryB = prefixB.charAt(0);
+        // Helper to extract the code prefix (e.g., A., A1, B12) before the first space
+        const extractCode = (label: string) => {
+            const m = label.match(/^[^\s]+/)
+            return m ? m[0] : label
+        }
+        // Extract the leading letter for proces/procesgebied codes
+        const extractLetter = (code: string) => {
+            const m = code.match(/^[A-Z]/)
+            return m ? m[0] : ''
+        }
+        const extractProcessNumber = (code: string) => {
+            const m = code.match(/^[A-Z]([0-9]+)/)
+            return m ? parseInt(m[1], 10) : NaN
+        }
 
-            if (categoryA !== categoryB) {
-                return categoryA.localeCompare(categoryB);
+        // Partition entities by classification
+        const containers: string[] = []
+        const procesgebiedenByLetter = new Map<string, string>() // letter -> label
+        const processenByLetter = new Map<string, string[]>() // letter -> labels
+        const others: string[] = []
+
+        for (const e of entities) {
+            const cls = classify(e)
+            if (cls === 'container') {
+                containers.push(e)
+            } else if (cls === 'procesgebied') {
+                const code = extractCode(e) // e.g., A.
+                const letter = extractLetter(code)
+                if (letter) procesgebiedenByLetter.set(letter, e)
+            } else if (cls === 'proces') {
+                const code = extractCode(e) // e.g., A12
+                const letter = extractLetter(code)
+                if (letter) {
+                    if (!processenByLetter.has(letter)) processenByLetter.set(letter, [])
+                    processenByLetter.get(letter)!.push(e)
+                } else {
+                    others.push(e)
+                }
+            } else {
+                others.push(e)
             }
+        }
 
-            return prefixA.localeCompare(prefixB);
-        });
+        // Sort containers numerically by their leading number
+        containers.sort((a, b) => {
+            const na = parseInt(a.match(/^\d+/)?.[0] || '0', 10)
+            const nb = parseInt(b.match(/^\d+/)?.[0] || '0', 10)
+            if (na !== nb) return na - nb
+            return a.localeCompare(b)
+        })
+
+        // For each letter A-Z, produce ordered sequence: procesgebied (if exists) then processes ascending by numeric part
+        const letterOrder: string[] = []
+        const lettersPresent = new Set<string>([
+            ...Array.from(procesgebiedenByLetter.keys()),
+            ...Array.from(processenByLetter.keys())
+        ])
+        const sortedLetters = Array.from(lettersPresent).sort((a, b) => a.localeCompare(b))
+        for (const letter of sortedLetters) {
+            const pg = procesgebiedenByLetter.get(letter)
+            if (pg) letterOrder.push(pg)
+            const procs = processenByLetter.get(letter) || []
+            procs.sort((a, b) => {
+                const ca = extractCode(a)
+                const cb = extractCode(b)
+                const na = extractProcessNumber(ca)
+                const nb = extractProcessNumber(cb)
+                if (!isNaN(na) && !isNaN(nb) && na !== nb) return na - nb
+                return ca.localeCompare(cb)
+            })
+            letterOrder.push(...procs)
+        }
+
+        // Remaining others: stable alphabetical
+        others.sort((a, b) => a.localeCompare(b))
+
+        entities = [...containers, ...letterOrder, ...others]
 
         const indexMap = new Map(entities.map((e, i) => [e, i]))
         const n = entities.length
@@ -134,25 +206,23 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
             )
             .text((d) => entities[d.index])
             .attr('fill', d => {
-                const label = entities[d.index];
-                if (/^(0[1-9]|1[0-8])\b/.test(label)) {
-                    return 'blue';
-                } else if(/^[A-Z]\./.test(label)) {
-                    return 'darkgreen';
-                } else {
-                    return 'green';
+                const label = entities[d.index]
+                const c = classify(label)
+                switch (c) {
+                    case 'container':
+                        return 'blue'
+                    case 'procesgebied':
+                        return 'darkgreen'
+                    case 'proces':
+                        return 'green'
+                    default:
+                        return '#555'
                 }
             })
             .attr('font-weight', d => {
-                const label = entities[d.index];
-                if (/^(0[1-9]|1[0-8])\b/.test(label)) {
-                    return 'bold';
-                } else
-                if (/^[A-Z]\./.test(label)) {
-                    return 'bold';
-                } else {
-                    return 'normal';
-                }
+                const label = entities[d.index]
+                const c = classify(label)
+                return (c === 'container' || c === 'procesgebied') ? 'bold' : 'normal'
             })
 
         // draw ribbons
