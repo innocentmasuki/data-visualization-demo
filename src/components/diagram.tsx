@@ -14,6 +14,7 @@ export type ChordDiagramProps = {
     colors?: string[]
     width?: number
     height?: number
+    id?: string
 }
 
 export const ChordDiagram: React.FC<ChordDiagramProps> = (
@@ -22,6 +23,7 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
         colors,
         width = 900,
         height = 600,
+        id,
     }) => {
     const svgRef = useRef<SVGSVGElement>(null)
     const tooltipRef = useRef<HTMLDivElement>(null)
@@ -192,7 +194,7 @@ export const ChordDiagram: React.FC<ChordDiagramProps> = (
 
     return (
         <div className="w-full h-full relative">
-            <svg ref={svgRef}/>
+            <svg ref={svgRef} id={id} />
             <div
                 ref={tooltipRef}
                 className="absolute pointer-events-none bg-gray-700 text-white text-xs rounded px-2 py-1 shadow-md"

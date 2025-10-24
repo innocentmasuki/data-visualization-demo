@@ -1,9 +1,10 @@
 'use client'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import { ChordDiagram, Relationship } from '@/components/diagram'
 
 const Home: React.FC = () => {
     const [relationships, setRelationships] = useState<Relationship[]>([])
+    const [view, setView] = useState<'processen' | 'procesgebieden'>('processen')
 
     const parseCSV = (csv: string): Relationship[] => {
         return csv
@@ -33,19 +34,124 @@ const Home: React.FC = () => {
 
     useEffect(() => {
         loadStaticCsv()
-    }, []);
+    }, [])
 
+    const processen = useMemo(() =>
+        relationships.filter(r => /^[A-Z][0-9]/.test(r.source)), [relationships])
 
+    const procesgebieden = useMemo(() =>
+        relationships.filter(r => /^[A-Z]\./.test(r.source)), [relationships])
+
+    const handleFileUpload: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        try {
+            const text = await file.text()
+            const parsed = parseCSV(text)
+            setRelationships(parsed)
+        } catch (err: any) {
+            alert(`Failed to parse CSV: ${err.message}`)
+        } finally {
+            e.target.value = ''
+        }
+    }
+
+    const svgToPng = async (svg: SVGSVGElement, filename: string) => {
+        const serializer = new XMLSerializer()
+        let source = serializer.serializeToString(svg)
+        if (!source.match(/^<svg[^>]+xmlns=/)) {
+            source = source.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"')
+        }
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source
+        const svgUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source)
+
+        const img = new Image()
+        const vb = svg.getAttribute('viewBox')?.split(' ').map(Number)
+        const width = vb && vb.length === 4 ? vb[2] : svg.clientWidth || 900
+        const height = vb && vb.length === 4 ? vb[3] : svg.clientHeight || 600
+        const scale = Math.max(1, Math.min(3, Math.ceil(window.devicePixelRatio || 2)))
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.ceil(width * scale)
+        canvas.height = Math.ceil(height * scale)
+        const ctx = canvas.getContext('2d')!
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+        await new Promise<void>((resolve, reject) => {
+            img.onload = () => {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                resolve()
+            }
+            img.onerror = () => reject(new Error('Failed to render SVG to image'))
+            img.src = svgUrl
+        })
+
+        const blob: Blob = await new Promise((resolve) => canvas.toBlob(b => resolve(b as Blob), 'image/png'))
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        URL.revokeObjectURL(url)
+    }
+
+    const downloadBoth = async () => {
+        const ids = ['chart-processen', 'chart-procesgebieden']
+        for (const id of ids) {
+            const svg = document.getElementById(id) as SVGSVGElement | null
+            if (svg) {
+                const fname = id === 'chart-processen' ? 'containers_processen.png' : 'containers_procesgebieden.png'
+                await svgToPng(svg, fname)
+            }
+        }
+    }
 
     return (
-        <div className="p-4 space-y-6">
-            <div className="border rounded p-4">
+        <div className="p-4 space-y-4">
+            <div className="flex flex-wrap items-center gap-3">
+                <div className="inline-flex rounded border overflow-hidden">
+                    <button
+                        className={`px-3 py-1.5 text-sm ${view === 'processen' ? 'bg-blue-600 text-white' : 'bg-white'}`}
+                        onClick={() => setView('processen')}
+                    >
+                        Containers ↔ Processen
+                    </button>
+                    <button
+                        className={`px-3 py-1.5 text-sm ${view === 'procesgebieden' ? 'bg-blue-600 text-white' : 'bg-white'}`}
+                        onClick={() => setView('procesgebieden')}
+                    >
+                        Containers ↔ Procesgebieden
+                    </button>
+                </div>
+
+                <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
+                    <span className="px-2 py-1 bg-gray-100 rounded border">Upload CSV</span>
+                    <input type="file" accept=".csv,text/csv" className="hidden" onChange={handleFileUpload} />
+                </label>
+
+                <button className="px-3 py-1.5 text-sm border rounded" onClick={loadStaticCsv}>
+                    Reset to bundled CSV
+                </button>
+
+                <button className="ml-auto px-3 py-1.5 text-sm border rounded" onClick={downloadBoth}>
+                    Download both charts (PNG)
+                </button>
+            </div>
+
+            <div className="border rounded p-4 relative">
                 {relationships.length > 0 ? (
-                    <ChordDiagram relationships={relationships}  />
+                    <>
+                        <div className={view === 'processen' ? '' : 'hidden'}>
+                            <ChordDiagram relationships={processen} id="chart-processen" />
+                        </div>
+                        <div className={view === 'procesgebieden' ? '' : 'hidden'}>
+                            <ChordDiagram relationships={procesgebieden} id="chart-procesgebieden" />
+                        </div>
+                    </>
                 ) : (
-                    <p className="text-gray-500 text-center">
-                        Loading...
-                    </p>
+                    <p className="text-gray-500 text-center">Loading...</p>
                 )}
             </div>
         </div>
